@@ -11,11 +11,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NaturalReader {
     
-    private final List<List<LivingBeing>> beingsToAdd = new ArrayList<>();
+    private final Map<Integer, List<LivingBeing>> beingsToAdd = new HashMap<>();
     private final Aquarium aquarium;
     public NaturalReader(Aquarium aquarium, String path) {
         this.aquarium = aquarium;
@@ -25,9 +27,6 @@ public class NaturalReader {
     private void read(String path) {
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             
-            for (int i = 0 ; i < 1000 ; i++) {
-                beingsToAdd.add(new ArrayList<>());
-            }
             int state = 1;
             String line = reader.readLine();
             List<LivingBeing> beings = new ArrayList<>();
@@ -37,7 +36,7 @@ public class NaturalReader {
                     line = line.replaceAll("=", "")
                             .replaceAll(" ", "")
                             .replaceAll("state", "");
-                    beingsToAdd.set(state - 1, new ArrayList<>(beings));
+                    beingsToAdd.put(state, new ArrayList<>(beings));
                     beings.clear();
                     state = Integer.parseInt(line);
                 } else if (line.matches("\\d+ plants \\d+ years")) { //adding plants
@@ -61,13 +60,13 @@ public class NaturalReader {
                 line = reader.readLine();
             }
             
-            beingsToAdd.set(state - 1, beings);
+            beingsToAdd.put(state, beings);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
     
     public List<LivingBeing> getLivingBeing(int state) {
-        return beingsToAdd.get(state - 1);
+        return beingsToAdd.get(state);
     }
 }
